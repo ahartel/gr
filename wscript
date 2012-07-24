@@ -7,9 +7,16 @@ def configure(conf):
 
     conf.env.LIB_GLUT = ['glut']
 
+    conf.env.GAME_SOURCE = [
+        'source/game.cpp',
+        'source/world.cpp',
+        'source/section.cpp',
+        'source/player.cpp',
+    ]
+
 def build(bld):
     bld.program(
         target='gr',
-        source=['game.cpp','world.cpp','section.cpp','player.cpp'],
+        source=bld.env.GAME_SOURCE,
         use='GLUT',
     )
