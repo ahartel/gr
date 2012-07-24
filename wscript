@@ -5,7 +5,7 @@ def options(opt):
 def configure(conf):
     conf.load('compiler_cxx')
 
-    conf.env.LIB_GLUT = ['glut']
+    conf.env.LIB_GL = ['glut','GL','GLU']
 
     conf.env.GAME_SOURCE = [
         'source/game.cpp',
@@ -18,5 +18,5 @@ def build(bld):
     bld.program(
         target='gr',
         source=bld.env.GAME_SOURCE,
-        use='GLUT',
+        use='GL',
     )
