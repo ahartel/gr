@@ -6,7 +6,7 @@ World::World() : section(0) {
 }
 
 void World::render() {
-	glColor3f (0.0, 1.0, 1.0);  /* the current RGB color is red: */
+	glColor3f (1.0, 1.0, 1.0);  /* the current RGB color is red: */
 	//glutSolidCube(1.);
 	draw_pipe_tile();
 }
@@ -19,15 +19,20 @@ void World::draw_pipe_tile() {
 	glPushMatrix();
 	glTranslatef(-1,0,+1);
 	glRotatef(90,0,1,0);
-	glRectf(-2.f,0.f,+2.f,+1.f);
+	glRectf(-1.f,0.f,+1.f,+2.f);
 	glPopMatrix();
 	glPushMatrix();
 	glTranslatef(+1,0,+1);
 	glRotatef(90,0,1,0);
-	glRectf(-2.f,0.f,+2.f,+1.f);
+	glRectf(-1.f,0.f,+1.f,+2.f);
 	glPopMatrix();
 	glPushMatrix();
 	glRotatef(90,1,0,0);
-	glRectf(-1.f,0.f,+2.f,+1.f);
+	glRectf(-1.f,0.f,+1.f,+2.f);
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(0,2,0);
+	glRotatef(90,1,0,0);
+	glRectf(-1.f,0.f,+1.f,+2.f);
 	glPopMatrix();
 }

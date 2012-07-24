@@ -18,7 +18,7 @@ void renderFunction() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glMatrixMode (GL_PROJECTION);
-	gluLookAt (0.0, 0.5, 0.0, 0.0, 0.0, -100.0, 0.0, 1.0, 0.0);
+	gluLookAt (0.0, 0.8, 0.0, -1.0, 0.0, -100.0, 0.0, 1.0, 0.0);
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity();
