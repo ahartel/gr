@@ -18,11 +18,11 @@ void renderFunction() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glMatrixMode (GL_PROJECTION);
-	gluLookAt (0.0, 0.8, 0.0, -1.0, 0.0, -100.0, 0.0, 1.0, 0.0);
+	gluLookAt (-.5, 0.8, 0.0, -1.0, 0.0, -100.0, 0.0, 1.0, 0.0);
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity();
-	glTranslatef(0,0,-5);
+	glTranslatef(0,0,-3);
 
 	world.render();
 	player.render();
@@ -37,6 +37,10 @@ void keyb(unsigned char key, int x, int y) {
 		cout << "Got q,so quitting " << endl;
 		glutDestroyWindow(win);
 		exit(0);
+	}
+	else if (key == ' ') {
+		cout << "JUMP" << endl;
+		player.init_jump();
 	}
 }
 

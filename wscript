@@ -19,4 +19,5 @@ def build(bld):
         target='gr',
         source=bld.env.GAME_SOURCE,
         use='GL',
+		cxxflags='-std=c++0x',
     )

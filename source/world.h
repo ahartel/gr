@@ -7,7 +7,6 @@ public:
 	void render();
 private:
 	std::list<Section> sections;
-	unsigned int section;
+	unsigned int current_section;
 	void render_section(unsigned int);
-	void draw_pipe_tile();
 };
