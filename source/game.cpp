@@ -2,6 +2,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <iostream>
+#include <thread>
 
 #include "game.h"
 #include "world.h"
@@ -17,17 +18,13 @@ void renderFunction() {
 	// do  a clearscreen
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glMatrixMode (GL_PROJECTION);
-	gluLookAt (-.5, 0.8, 0.0, -1.0, 0.0, -100.0, 0.0, 1.0, 0.0);
-
-	glMatrixMode (GL_MODELVIEW);
-	glLoadIdentity();
+	player.lookAt();
 	glTranslatef(0,0,-3);
 
 	world.render();
 	player.render();
 
-	glFlush();
+	glutSwapBuffers();
 }
 
 void keyb(unsigned char key, int x, int y) {
@@ -46,30 +43,45 @@ void keyb(unsigned char key, int x, int y) {
 
 void reshape (int w, int h)
 {
-   glViewport (0, 0, (GLsizei) w, (GLsizei) h);
-   glMatrixMode (GL_PROJECTION);
-   glLoadIdentity ();
-   glFrustum (-1.5, 1.5, -1.0, 1.0, 1.5, 20.0);
-   glMatrixMode (GL_MODELVIEW);
+	glViewport (0, 0, (GLsizei) w, (GLsizei) h);
+	glMatrixMode (GL_PROJECTION);
+	glLoadIdentity ();
+	glFrustum (-1.5, 1.5, -1.0, 1.0, 1.5, 20.0);
+	glMatrixMode (GL_MODELVIEW);
 }
 
+void render()
+{
+	glutPostRedisplay();
+}
+
+void evolve_physics()
+{
+	while (true) {
+		player.calculate_height();
+		usleep(1000);
+	}
+}
 
 int main(int argc, char* argv[]) {
 /* Main method - main entry point of application
 the freeglut library does the window creation work for us, 
 regardless of the platform. */
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
     glutInitWindowSize(500,500);
     glutInitWindowPosition(100,100);
-    win = glutCreateWindow("OpenGL - First window demo");
+    win = glutCreateWindow("gr");
     glutDisplayFunc(renderFunction);
 	glutKeyboardFunc(keyb);
 	glutReshapeFunc(reshape);
+	glutIdleFunc(render);
 
 	// define the color we use to clearscreen 
 	glClearColor(0.0,0.0,0.0,0.0);
 
+	std::thread t(evolve_physics);
     glutMainLoop();
+
     return 0;
 }
