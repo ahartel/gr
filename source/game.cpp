@@ -7,6 +7,7 @@
 #include "game.h"
 #include "world.h"
 #include "player.h"
+#include <unistd.h>
 
 using namespace std;
 
