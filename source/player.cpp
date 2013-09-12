@@ -24,13 +24,13 @@ void Player::rotate(rotation r)
 	if (r==left)
 	{
 		if (gravity[1] > 0)
-			gravity = std::array<float,3>{-1,0,0};
+			gravity = std::array<double,3>{-1,0,0};
 		else if (gravity[0] < 0)
-			gravity = std::array<float,3>{0,-1,0};
+			gravity = std::array<double,3>{0,-1,0};
 		else if (gravity[1] < 0)
-			gravity = std::array<float,3>{1,0,0};
+			gravity = std::array<double,3>{1,0,0};
 		else if (gravity[0] > 0)
-			gravity = std::array<float,3>{0,1,0};
+			gravity = std::array<double,3>{0,1,0};
 
 		orientation_z -= 90;
 		if (orientation_z <= -360)
@@ -39,13 +39,13 @@ void Player::rotate(rotation r)
 	else if (r==right)
 	{
 		if (gravity[1] > 0)
-			gravity = std::array<float,3>{1,0,0};
+			gravity = std::array<double,3>{1,0,0};
 		else if (gravity[0] < 0)
-			gravity = std::array<float,3>{0,1,0};
+			gravity = std::array<double,3>{0,1,0};
 		else if (gravity[1] < 0)
-			gravity = std::array<float,3>{-1,0,0};
+			gravity = std::array<double,3>{-1,0,0};
 		else if (gravity[0] > 0)
-			gravity = std::array<float,3>{0,-1,0};
+			gravity = std::array<double,3>{0,-1,0};
 
 		orientation_z += 90;
 		if (orientation_z >= 360)
@@ -80,7 +80,7 @@ void Player::init_jump() {
 	jump_mutex.unlock();
 }
 
-void Player::calculate_height() {
+PosSpeedEvent* Player::advance() {
 	jump_mutex.lock();
 	if (in_jump) {
 		if (vector_sp(height,gravity)-initial_height > 1e-3) {
@@ -89,11 +89,11 @@ void Player::calculate_height() {
 		}
 		else {
 			height = vector_scale(initial_height,gravity);
-			velocity = std::array<float,3>{0,0,0};
+			velocity = std::array<double,3>{0,0,0};
 			in_jump = 0;
 		}
-		//cout << height << "," << velocity << endl;
 	}
 	jump_mutex.unlock();
+	return new PosSpeedEvent(height,velocity);
 }
 

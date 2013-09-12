@@ -3,11 +3,14 @@
 #include <GL/glu.h>
 #include <iostream>
 #include <thread>
+#include <queue>
 
 #include "game.h"
 #include "world.h"
 #include "player.h"
 #include "camera.h"
+#include "event.h"
+#include "point.hpp"
 #include <unistd.h>
 
 using namespace std;
@@ -16,6 +19,10 @@ World world;
 Player player;
 Camera camera;
 static int win;
+std::deque<Event*> ev_player_rx;
+std::deque<Event*> ev_player_tx;
+std::array<double,3> gravity;
+double initial_height = -1;
 
 void renderFunction() {
 	// do  a clearscreen
@@ -72,7 +79,10 @@ void render()
 void evolve_physics()
 {
 	while (true) {
-		player.calculate_height();
+		ev_player_rx.push_back(player.advance());
+		PosSpeedEvent* last_event = static_cast<PosSpeedEvent*>(ev_player_rx.back());
+		if (vector_sp(last_event->getX(),gravity) > initial_height)
+			ev_player_tx.push_back(new CollisionEvent);
 		//world.advance();
 		usleep(1000);
 	}
@@ -97,6 +107,11 @@ regardless of the platform. */
 
 	std::thread t(evolve_physics);
     glutMainLoop();
+
+	for (auto ii : ev_player_rx)
+		delete ii;
+	for (auto ii : ev_player_tx)
+		delete ii;
 
     return 0;
 }
