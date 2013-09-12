@@ -1,11 +1,58 @@
 #include "player.h"
 #include <GL/freeglut.h>
 #include <iostream>
+#include "point.hpp"
 
 using namespace std;
 
-Player::Player() : timestep(0.001), gravity(9.81) {
+Player::Player() :
+	timestep(0.001),
+	gravity{{0,1,0}},
+	gravity_constant(-9.81),
+	initial_velocity(4.0),
+	initial_jump_height(0.1),
+	initial_height(-1.0),
+	height{{0,initial_height,0}},
+	orientation_z(0),
+	trans_rot(0)
+{
 
+}
+
+void Player::rotate(rotation r)
+{
+	if (r==left)
+	{
+		if (gravity[1] > 0)
+			gravity = std::array<float,3>{-1,0,0};
+		else if (gravity[0] < 0)
+			gravity = std::array<float,3>{0,-1,0};
+		else if (gravity[1] < 0)
+			gravity = std::array<float,3>{1,0,0};
+		else if (gravity[0] > 0)
+			gravity = std::array<float,3>{0,1,0};
+
+		orientation_z -= 90;
+		if (orientation_z <= -360)
+			orientation_z = 0;
+	}
+	else if (r==right)
+	{
+		if (gravity[1] > 0)
+			gravity = std::array<float,3>{1,0,0};
+		else if (gravity[0] < 0)
+			gravity = std::array<float,3>{0,1,0};
+		else if (gravity[1] < 0)
+			gravity = std::array<float,3>{-1,0,0};
+		else if (gravity[0] > 0)
+			gravity = std::array<float,3>{0,-1,0};
+
+		orientation_z += 90;
+		if (orientation_z >= 360)
+			orientation_z = 0;
+	}
+	height = vector_scale(initial_height,gravity);
+	cout << orientation_z << endl;
 }
 
 void Player::render() {
@@ -14,9 +61,10 @@ void Player::render() {
 	glColor3f (1.0, 0.0, 0.0);  /* the current RGB color is red: */
                             /* full red, no green, no blue. */
 	glPushMatrix();
-	glRotatef(90,0,1,0);
 	jump_mutex.lock();
-	glTranslatef(0,height,0);
+	glRotatef(trans_rot,0.0,0.0,-1.0);
+	glTranslatef(height[0],height[1],height[2]);
+	glRotatef(orientation_z,0.0,0.0,-1.0);
 	jump_mutex.unlock();
 	glutWireTeapot(0.5);
 	glPopMatrix();
@@ -26,8 +74,8 @@ void Player::init_jump() {
 	jump_mutex.lock();
 	if (!in_jump) {
 		in_jump = 1;
-		velocity = 4.0;
-		height = 0.01;
+		velocity = vector_scale(initial_velocity,gravity);
+		height = vector_scale(initial_height+initial_jump_height,gravity);
 	}
 	jump_mutex.unlock();
 }
@@ -35,24 +83,17 @@ void Player::init_jump() {
 void Player::calculate_height() {
 	jump_mutex.lock();
 	if (in_jump) {
-		if (height > 0.0) {
-			cout << "greater" << endl;
-			height += velocity * timestep;
-			velocity = velocity - (gravity * timestep);
+		if (vector_sp(height,gravity)-initial_height > 1e-3) {
+			height = vector_add(height, vector_scale(timestep, velocity));
+			velocity = vector_add(velocity,vector_scale(gravity_constant*timestep,gravity));
 		}
 		else {
-			height = 0;
-			velocity = 0;
+			height = vector_scale(initial_height,gravity);
+			velocity = std::array<float,3>{0,0,0};
 			in_jump = 0;
 		}
-		cout << height << "," << velocity << endl;
+		//cout << height << "," << velocity << endl;
 	}
 	jump_mutex.unlock();
 }
 
-void Player::lookAt() {
-	glMatrixMode (GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt (0.0, 1.2, 0.0, -1.0, 0.0, -100.0, 0.0, 1.0, 0.0);
-	//gluLookAt (-.5, 0.8, 0.0, -1.0, 0.0, -100.0, 0.0, 1.0, 0.0);
-}

@@ -9,6 +9,8 @@ def configure(conf):
 
     conf.env.GAME_SOURCE = [
         'source/game.cpp',
+        'source/camera.cpp',
+        'source/event.cpp',
         'source/world.cpp',
         'source/section.cpp',
         'source/player.cpp',

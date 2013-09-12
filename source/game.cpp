@@ -7,21 +7,24 @@
 #include "game.h"
 #include "world.h"
 #include "player.h"
+#include "camera.h"
 #include <unistd.h>
 
 using namespace std;
 
 World world;
 Player player;
+Camera camera;
 static int win;
 
 void renderFunction() {
 	// do  a clearscreen
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	player.lookAt();
-	glTranslatef(0,0,-3);
+	glMatrixMode (GL_MODELVIEW);
+	glLoadIdentity();
 
+	camera.lookAt();
 	world.render();
 	player.render();
 
@@ -32,9 +35,19 @@ void keyb(unsigned char key, int x, int y) {
 	cout << "Pressed key " << key << " on coordinates (" << x << "," << y << ")";
 	cout << endl;
 	if(key == 'q'){
-		cout << "Got q,so quitting " << endl;
+		cout << "Got q, quitting." << endl;
 		glutDestroyWindow(win);
 		exit(0);
+	}
+	else if(key == 'a'){
+		cout << "Got a, rotating left." << endl;
+		player.rotate(Player::left);
+		camera.rotate(Player::left);
+	}
+	else if(key == 'd'){
+		cout << "Got d, rotating right." << endl;
+		player.rotate(Player::right);
+		camera.rotate(Player::right);
 	}
 	else if (key == ' ') {
 		cout << "JUMP" << endl;
@@ -60,6 +73,7 @@ void evolve_physics()
 {
 	while (true) {
 		player.calculate_height();
+		//world.advance();
 		usleep(1000);
 	}
 }

@@ -1,4 +1,7 @@
+#pragma once
+
 #include <mutex>
+#include <array>
 
 class Player {
 public:
@@ -6,13 +9,24 @@ public:
 	void render();
 	void init_jump();
 	void calculate_height();
-	void lookAt();
+
+	enum rotation {left,right};
+	void rotate(rotation r);
+
 private:
 	bool in_jump;
-	float velocity;
-	float height;
+	bool in_transition;
 	std::mutex jump_mutex;
 
 	float timestep;
-	float gravity;
+	float orientation_z;
+	float trans_rot;
+	float gravity_constant;
+	float initial_velocity;
+	float initial_height;
+	float initial_jump_height;
+
+	std::array<float,3> gravity;
+	std::array<float,3> velocity;
+	std::array<float,3> height;
 };
